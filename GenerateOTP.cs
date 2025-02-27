@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Security.Cryptography;
-//using System.Threading.Tasks;
-//using OtpSharp;
-//using Base32;
+using OtpNet;
 
-public class GenerateOTP
+public class GenerateOTP //using manual
 {
     public static string GenerateTOTP(int digits = 6, int timeStep = 30)
     {
-        string secret = "SECRETKEY"; // ntar dibikin secret beneran
+        string secret = "SECRETKEY"; //insert secret from qr code
         string uppercaseKey = secret.ToUpper();
         long counter = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / timeStep;
         return GenerateHOTP(uppercaseKey, counter, digits);
@@ -35,5 +30,16 @@ public class GenerateOTP
             int otp = binaryCode % (int)Math.Pow(10, digits);
             return otp.ToString(new string('0', digits));
         }
+    }
+
+    public static string GenerateMyOTP() // using library
+    {
+        string secretKey = "SECRETKEY"; //insert secret from qr code
+        string uppercaseKey = secretKey.ToUpper();
+        byte[] secretKeyBytes = Base32Encoding.ToBytes(uppercaseKey);
+        var totp = new Totp(secretKeyBytes);
+        string generatedOtp = totp.ComputeTotp();
+
+        return generatedOtp;
     }
 }
